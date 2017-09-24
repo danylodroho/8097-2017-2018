@@ -38,6 +38,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.hardware.usb.UsbDevice;
@@ -112,6 +113,11 @@ import org.firstinspires.inspection.RcInspectionActivity;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.JavaCameraView;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+
 @SuppressWarnings("WeakerAccess")
 public class FtcRobotControllerActivity extends Activity
   {
@@ -143,6 +149,8 @@ public class FtcRobotControllerActivity extends Activity
   protected TextView textOpMode;
   protected TextView textErrorMessage;
   protected ImmersiveMode immersion;
+
+  public static JavaCameraView mOpenCvCameraView;
 
   protected UpdateUI updateUI;
   protected Dimmer dimmer;
@@ -219,6 +227,10 @@ public class FtcRobotControllerActivity extends Activity
     RobotLog.vv(TAG, "onCreate()");
     ThemedActivity.appAppThemeToActivity(getTag(), this); // do this way instead of inherit to help AppInventor
 
+    // DIFFERS FROM LAST YEARS SCREEN_ORIENTATION_LANDSCAPE
+
+    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+
     Assert.assertTrue(FtcRobotControllerWatchdogService.isFtcRobotControllerActivity(AppUtil.getInstance().getRootActivity()));
     Assert.assertTrue(AppUtil.getInstance().isRobotController());
 
@@ -284,6 +296,8 @@ public class FtcRobotControllerActivity extends Activity
     dimmer = new Dimmer(this);
     dimmer.longBright();
 
+    mOpenCvCameraView = (JavaCameraView) findViewById(R.id.cameraView);
+
     programmingWebHandlers = new ProgrammingWebHandlers();
     programmingModeController = new ProgrammingModeControllerImpl(
             this, (TextView) findViewById(R.id.textRemoteProgrammingMode), programmingWebHandlers);
@@ -342,10 +356,37 @@ public class FtcRobotControllerActivity extends Activity
     });
   }
 
+
+      //REMOVED LOG DUE TO IT CAUSING AN ERROR
+
+      private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+          @Override
+          public void onManagerConnected(int status) {
+              switch (status) {
+                  case LoaderCallbackInterface.SUCCESS: {
+  //                    Log.i(TAG, "OpenCV loaded successfully");
+                      mOpenCvCameraView.enableView();
+                  }
+                  break;
+                  default: {
+                      super.onManagerConnected(status);
+                  }
+                  break;
+              }
+          }
+      };
   @Override
   protected void onResume() {
     super.onResume();
     RobotLog.vv(TAG, "onResume()");
+
+      if (!OpenCVLoader.initDebug()) {
+ //         Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+          OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_11, this, mLoaderCallback);
+      } else {
+   //       Log.d(TAG, "OpenCV library found inside package. Using it!");
+          mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+      }
   }
 
   @Override
@@ -354,6 +395,8 @@ public class FtcRobotControllerActivity extends Activity
     RobotLog.vv(TAG, "onPause()");
     if (programmingModeController.isActive()) {
       programmingModeController.stopProgrammingMode();
+        if (mOpenCvCameraView != null)
+            mOpenCvCameraView.disableView();
     }
   }
 
@@ -368,6 +411,10 @@ public class FtcRobotControllerActivity extends Activity
   @Override
   protected void onDestroy() {
     super.onDestroy();
+
+    if (mOpenCvCameraView != null)
+          mOpenCvCameraView.disableView();
+
     RobotLog.vv(TAG, "onDestroy()");
 
     shutdownRobot();  // Ensure the robot is put away to bed
@@ -621,4 +668,18 @@ public class FtcRobotControllerActivity extends Activity
       }
     }
   }
+
+      /*public final static Handler turnOnCameraView = new Handler() {
+          @Override
+          public void handleMessage(Message msg) {
+              mOpenCvCameraView.setVisibility(View.VISIBLE);
+          }
+      };
+
+      public final static Handler turnOffCameraView = new Handler() {
+          @Override
+          public void handleMessage(Message msg) {
+              mOpenCvCameraView.setVisibility(View.GONE);
+          }
+      };*/
 }
