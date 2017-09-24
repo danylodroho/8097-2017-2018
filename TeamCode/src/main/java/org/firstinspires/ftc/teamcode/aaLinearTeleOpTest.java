@@ -75,6 +75,7 @@ public class aaLinearTeleOpTest extends aaBaseOpModeTest {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             //telemetry.addData("Distance REV: ", rangeSensor.getDistance(DistanceUnit.CM));
 //            range1Cache = RANGE1Reader.read(RANGE1_REG_START, RANGE1_READ_LENGTH);
@@ -84,6 +85,7 @@ public class aaLinearTeleOpTest extends aaBaseOpModeTest {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             //telemetry.addData("Servo Position:", servoInitPosition(servo1()));
             telemetry.addData("Something to do with Color: ", colorSense.red());
+<<<<<<< Updated upstream
             telemetry.addData("Optical rev sensor distance", rangeSense.get
             telemetry.update();
 
@@ -92,15 +94,23 @@ public class aaLinearTeleOpTest extends aaBaseOpModeTest {
             {
                 servo1.setPosition(servo1.getPosition() + .1);
                 servo2.setPosition(servo2.getPosition() + .1);
+=======
+            telemetry.addData("Left Trigger Position", gamepad1.left_trigger);
+            telemetry.addData("Right Trigger Position", gamepad1.right_trigger);
+            telemetry.update();
+
+            if (gamepad1.left_trigger > 0) {
+                motor1.setPower(gamepad1.left_trigger);
+            }else{
+                motor1.setPower(0);
+>>>>>>> Stashed changes
             }
-            else if (colorSense.red() < 10)
-            {
-                servo1.setPosition(servo1.getPosition() - .1);
-                servo2.setPosition(servo2.getPosition() - .1);
+            if (gamepad1.right_trigger > 0) {
+                motor2.setPower(gamepad1.right_trigger);
+            }else{
+                motor2.setPower(0);
             }
 
-            motor1.setPower(1);
-            motor2.setPower(1);
             // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
             // leftMotor.setPower(-gamepad1.left_stick_y);
             // rightMotor.setPower(-gamepad1.right_stick_y);
