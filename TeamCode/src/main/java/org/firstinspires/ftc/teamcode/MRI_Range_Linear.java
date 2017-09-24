@@ -55,7 +55,7 @@ public class MRI_Range_Linear extends LinearOpMode {
             /*telemetry.addData("Ultra Sonic", range1Cache[0] & 0xFF);
             telemetry.addData("ODS", range1Cache[1] & 0xFF);*/
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Servo Position:", )
+            //telemetry.addData("Servo Position:", );
             telemetry.update();
 
             idle();
