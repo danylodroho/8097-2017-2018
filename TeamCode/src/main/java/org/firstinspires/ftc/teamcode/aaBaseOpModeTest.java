@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
@@ -34,7 +35,7 @@ import java.util.List;
 public abstract class aaBaseOpModeTest extends LinearOpMode{
 
     ColorSensor colorSense;
-
+    OpticalDistanceSensor rangeSense;
     Servo servo1;
     Servo servo2;
     Servo servo3;
@@ -63,6 +64,7 @@ public abstract class aaBaseOpModeTest extends LinearOpMode{
         servo1 = hardwareMap.servo.get("servo1");
         servo2 = hardwareMap.servo.get("servo2");
         servo3 = hardwareMap.servo.get("servo3");
+        rangeSense = hardwareMap.opticalDistanceSensor.get("rangeREV");
 
         motor2 = hardwareMap.dcMotor.get("motor2");
         motor1 = hardwareMap.dcMotor.get("motor1");
