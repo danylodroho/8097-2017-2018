@@ -84,7 +84,9 @@ public class aaLinearTeleOpTest extends aaBaseOpModeTest {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             //telemetry.addData("Servo Position:", servoInitPosition(servo1()));
             telemetry.addData("Something to do with Color: ", colorSense.red());
+            telemetry.addData("Optical rev sensor distance", rangeSense.get
             telemetry.update();
+
 
             if (colorSense.red() > 10)
             {
